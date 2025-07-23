@@ -1,0 +1,5 @@
+/*
+  X-Content-Type-Options:
+  X-XSS-Protection:
+  Strict-Transport-Security:
+  Content-Security-Policy: default-src * 'unsafe-inline' 'unsafe-eval'; connect-src *; img-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline'; form-action *;

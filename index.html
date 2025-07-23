@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sicklv – منصة الخدمات الطبية</title>
+  <link rel="icon" href="logoo.ico" type="image/x-icon" />
+
+  <style>
+    :root {
+      --primary-color:   #2c70b9;
+      --text-primary:    #333;
+      --background-gray: #f5f5f5;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #fff;
+      color: var(--text-primary);
+      text-align: center;
+      min-height: 100vh;
+    }
+    .top-image, .bottom-image {
+      width: 100%;
+      height: auto;
+    }
+    .container {
+      width: 80%;
+      max-width: 500px;
+      margin: 30px auto;
+    }
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-group {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      border: 1px solid var(--primary-color);
+      border-radius: 5px;
+      text-align: right;
+      background: #fff;
+      color: #333;
+      box-sizing: border-box;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(44,112,185,0.2);
+    }
+    .btn-group, .page2-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      max-width: 178px;
+      margin: 20px auto 0;
+    }
+    .btn, .page2-btn {
+      padding: 6.8px;
+      font-size: 0.7rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      background: var(--primary-color);
+      color: #fff;
+      width: 100%;
+    }
+    .btn:hover, .page2-btn:hover {
+      opacity: 0.9;
+    }
+    .btn:active, .page2-btn:active {
+      transform: scale(0.98);
+    }
+    #page2 {
+      display: none;
+      min-height: 70vh;
+    }
+
+    /* صندوق نتائج الاستعلام */
+    #detailsContainer {
+      margin: 32px auto;
+      max-width: 90%;
+      background: var(--background-gray);
+      border-radius: 5px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: right;
+    }
+
+    /* عرض الحقول بشكل عمودي */
+    .leave-details {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      width: 100%;
+      padding: 18px;
+      border: 1px solid var(--primary-color);
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .detail-group {
+      margin-bottom: 14px;
+      text-align: right;
+    }
+    .detail-label {
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 2px;
+      color: var(--text-primary);
+    }
+    .detail-value {
+      font-size: 0.85rem;
+    }
+    .service-id, .id-number {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .container { width: 95%; }
+    }
+    @media (max-width: 480px) {
+      .container { width: 98%; }
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary-color:   #4a89dc;
+        --text-primary:    #f5f5f5;
+        --background-gray: #222;
+      }
+      body { background: #121212; color: var(--text-primary); }
+    }
+    @media print {
+      .top-image, .bottom-image { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <img src="uup.jpg" alt="شعار المنصة" class="top-image" draggable="true" />
+
+  <!-- صفحة الاستعلام -->
+  <div class="container" id="page1">
+    <form id="inquiryForm" class="form-container" autocomplete="off" spellcheck="false">
+      <div class="form-group">
+        <input
+          type="text"
+          id="serviceCode"
+          class="form-control"
+          placeholder="رمز الخدمة"
+          required minlength="8"
+          maxlength="20"
+          pattern="[A-Za-z0-9]{8,20}"
+        />
+      </div>
+      <div class="form-group">
+        <input
+          type="text"
+          id="idNumber"
+          class="form-control"
+          placeholder="رقم الهوية / الإقامة"
+          required minlength="10"
+          maxlength="10"
+          pattern="[0-9]{10}"
+        />
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn">استعلام</button>
+        <button type="button" class="btn" id="resetBtn">رجوع للاستعلامات</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- صفحة عرض النتائج -->
+  <div class="container" id="page2">
+    <div id="detailsContainer"></div>
+    <div class="page2-btn-group">
+      <button type="button" id="newInquiry" class="page2-btn">استعلام جديد</button>
+      <button type="button" id="returnForm" class="page2-btn">رجوع</button>
+    </div>
+  </div>
+
+  <img src="ddown.jpg" alt="الشعار السفلي" class="bottom-image" draggable="true" />
+
+  <script>
+    "use strict";
+
+    const serviceCodeInput = document.getElementById("serviceCode");
+    const idNumberInput    = document.getElementById("idNumber");
+    const inquiryForm      = document.getElementById("inquiryForm");
+    const page1            = document.getElementById("page1");
+    const page2            = document.getElementById("page2");
+    const details          = document.getElementById("detailsContainer");
+    const resetBtn         = document.getElementById("resetBtn");
+    const newInquiryBtn    = document.getElementById("newInquiry");
+    const returnFormBtn    = document.getElementById("returnForm");
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"'\/]/g, c =>
+        ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#x27;","/":"&#x2F;" })[c]
+      );
+    }
+
+    function resetForm() {
+      inquiryForm.reset();
+      page2.style.display = "none";
+      page1.style.display = "block";
+    }
+
+    inquiryForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const code = serviceCodeInput.value.trim();
+      const id   = idNumberInput.value.trim();
+
+      fetch("https://sicklv-life-6.onrender.com/api/leave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ serviceCode: code, idNumber: id })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.record) {
+          const r = data.record;
+          details.innerHTML = `
+            <div class="service-id">${escapeHTML(r.serviceCode)}</div>
+            <div class="id-number">${escapeHTML(r.idNumber)}</div>
+            <div class="leave-details">
+              <div class="detail-group">
+                <div class="detail-label">الاسم:</div>
+                <div class="detail-value">${escapeHTML(r.name)}</div>
+              </div>
+              <div class="detail-group">
+                <div class="detail-label">تاريخ إصدار تقرير الإجازة:</div>
+                <div class="detail-value">${escapeHTML(r.reportDate)}</div>
+              </div>
+              <div class="detail-group">
+                <div class="detail-label">تبدأ من:</div>
+                <div class="detail-value">${escapeHTML(r.startDate)}</div>
+              </div>
+              <div class="detail-group">
+                <div class="detail-label">وحتى:</div>
+                <div class="detail-value">${escapeHTML(r.endDate)}</div>
+              </div>
+              <div class="detail-group">
+                <div class="detail-label">المدة بالأيام:</div>
+                <div class="detail-value">${escapeHTML(r.days)}</div>
+              </div>
+              <div class="detail-group">
+                <div class="detail-label">اسم الطبيب:</div>
+                <div class="detail-value">${escapeHTML(r.doctorName)}</div>
+              </div>
+              <div class="detail-group">
+                <div class="detail-label">المسمى الوظيفي:</div>
+                <div class="detail-value">${escapeHTML(r.jobTitle)}</div>
+              </div>
+            </div>`;
+        } else {
+          details.innerHTML = `<p>${escapeHTML(data.message || 'لا توجد بيانات.')}</p>`;
+        }
+        page1.style.display = "none";
+        page2.style.display = "block";
+      })
+      .catch(() => {
+        alert("تعذر الاتصال بالخدمة. حاول لاحقاً.");
+      });
+    });
+
+    resetBtn.addEventListener("click", resetForm);
+    newInquiryBtn.addEventListener("click", resetForm);
+    returnFormBtn.addEventListener("click", resetForm);
+  </script>
+</body>
+</html>
